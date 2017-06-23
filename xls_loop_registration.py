@@ -15,20 +15,19 @@ class RegistrationTest (unittest.TestCase):
 
     def test_correct_registration_data(self):
 
-        for i in range(self.book.sheet_by_index(0).nrows):
-            self.driver.find_element_by_link_text("Zaloguj").click()
+        book_sheet = self.book.sheet_by_index(0)
 
-            time.sleep(2)
-            register_button = self.driver.find_element_by_xpath("//md-dialog[@id='dialogContent_6']/div/md-content/div/form/button[2]")
-            register_button.click()
+        for i in range(book_sheet.nrows):
 
-            login = self.book.sheet_by_index(0).cell(i, 1)
+            self.preparation()
+
+            login = book_sheet.cell(i, 1)
 
             username = self.driver.find_element_by_name("username")
             username.clear()
             username.send_keys(login.value)
 
-            email = self.book.sheet_by_index(0).cell(i, 2)
+            email = book_sheet.cell(i, 2)
 
             email_field = self.driver.find_element_by_name("email")
             email_field.clear()
@@ -37,7 +36,7 @@ class RegistrationTest (unittest.TestCase):
             repeat_email_field.clear()
             repeat_email_field.send_keys(email.value)
 
-            password = self.book.sheet_by_index(0).cell(1, 4)
+            password = book_sheet.cell(1, 4)
 
             password_field = self.driver.find_element_by_name("password")
             password_field.clear()
@@ -45,6 +44,12 @@ class RegistrationTest (unittest.TestCase):
             password_repeat_field = self.driver.find_element_by_name("password_repeat")
             password_repeat_field.clear()
             password_repeat_field.send_keys(password.value)
+
+            date_of_birth = book_sheet.cell(i, 3)
+
+            birth_field = self.driver.find_element_by_id("input_14")
+            birth_field.clear()
+            birth_field.send_keys(date_of_birth.value)
 
             register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
             register.click()
@@ -56,6 +61,60 @@ class RegistrationTest (unittest.TestCase):
             print (element.is_displayed())
             element.click()
             time.sleep(2)
+
+    def test_already_used_user_name(self):
+
+        book_sheet = self.book.sheet_by_index(1)
+
+        self.preparation()
+
+        login = book_sheet.cell(1, 1)
+
+        username = self.driver.find_element_by_name("username")
+        username.clear()
+        username.send_keys(login.value)
+
+        email = book_sheet.cell(1, 2)
+
+        email_field = self.driver.find_element_by_name("email")
+        email_field.clear()
+        email_field.send_keys(email.value)
+        repeat_email_field = self.driver.find_element_by_name("emailrepeat")
+        repeat_email_field.clear()
+        repeat_email_field.send_keys(email.value)
+
+        password = book_sheet.cell(1, 4)
+
+        password_field = self.driver.find_element_by_name("password")
+        password_field.clear()
+        password_field.send_keys(password.value)
+        password_repeat_field = self.driver.find_element_by_name("password_repeat")
+        password_repeat_field.clear()
+        password_repeat_field.send_keys(password.value)
+
+        register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
+        register.click()
+
+        message = self.driver.find_element_by_css_selector("ng-binding ng-scope")
+        self.assertIn(_("Podana nazwa użytkownika jest już zajęta."), message.text)
+
+
+    def preparation(self):
+
+        self.driver.find_element_by_link_text("Zaloguj").click()
+
+        time.sleep(2)
+        register_button = self.driver.find_element_by_xpath(
+            "//md-dialog[@id='dialogContent_6']/div/md-content/div/form/button[2]")
+        register_button.click()
+
+
+
+
+
+
+
+
 
     def tearDown(self):
         self.driver.close()
