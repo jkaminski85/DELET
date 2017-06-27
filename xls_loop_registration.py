@@ -1,5 +1,6 @@
 # - *- coding: utf- 8 - *-
 import xlrd
+import os
 import time
 import unittest
 from selenium import webdriver
@@ -8,7 +9,9 @@ from selenium import webdriver
 class RegistrationTest (unittest.TestCase):
     def setUp(self):
         self.book = xlrd.open_workbook("register_test_data.xls")
-        self.driver = webdriver.Chrome('/home/janusz/Pobrane/chromedriver')
+        driver_path = os.path.dirname(os.path.abspath(__file__)) + "/chromedriver"  # if you want run tests on Chrome
+        self.driver = webdriver.Chrome(driver_path)  # if you want run tests on Chrome
+        # self.driver = webdriver.Firefox() # if you want to run tests on FF
         self.driver.set_page_load_timeout(10)
         self.driver.get('http://valletta.dro.nask.pl:8001/')
         self.driver.maximize_window()
@@ -24,45 +27,45 @@ class RegistrationTest (unittest.TestCase):
             "//md-dialog[@id='dialogContent_6']/div/md-content/div/form/button[2]")
         register_button.click()
 
-    # def test_correct_registration_data(self):
-    #
-    #     for i in range(self.book_sheet.nrows):
-    #
-    #         self.preparation()
-    #
-    #         login = self.book_sheet.cell(i, 1)
-    #
-    #         username = self.driver.find_element_by_name("username")
-    #         username.clear()
-    #         username.send_keys(login.value)
-    #
-    #         email = self.book_sheet.cell(i, 2)
-    # 
-    #         email_field = self.driver.find_element_by_name("email")
-    #         email_field.clear()
-    #         email_field.send_keys(email.value)
-    #         repeat_email_field = self.driver.find_element_by_name("emailrepeat")
-    #         repeat_email_field.clear()
-    #         repeat_email_field.send_keys(email.value)
-    #
-    #         password = self.book_sheet.cell(1, 4)
-    #
-    #         password_field = self.driver.find_element_by_name("password")
-    #         password_field.clear()
-    #         password_field.send_keys(password.value)
-    #         password_repeat_field = self.driver.find_element_by_name("password_repeat")
-    #         password_repeat_field.clear()
-    #         password_repeat_field.send_keys(password.value)
-    #
-    #         register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
-    #         register.click()
-    #
-    #         time.sleep(2)
-    #
-    #         element = self.driver.find_element_by_css_selector("div.ng-scope > button.btn")
-    #         self.assertTrue(element.is_displayed())
-    #         element.click()
-    #         time.sleep(2)
+    def test_correct_registration_data(self):
+
+        for i in range(self.book_sheet.nrows):
+
+            self.preparation()
+
+            login = self.book_sheet.cell(i, 1)
+
+            username = self.driver.find_element_by_name("username")
+            username.clear()
+            username.send_keys(login.value)
+
+            email = self.book_sheet.cell(i, 2)
+
+            email_field = self.driver.find_element_by_name("email")
+            email_field.clear()
+            email_field.send_keys(email.value)
+            repeat_email_field = self.driver.find_element_by_name("emailrepeat")
+            repeat_email_field.clear()
+            repeat_email_field.send_keys(email.value)
+
+            password = self.book_sheet.cell(1, 4)
+
+            password_field = self.driver.find_element_by_name("password")
+            password_field.clear()
+            password_field.send_keys(password.value)
+            password_repeat_field = self.driver.find_element_by_name("password_repeat")
+            password_repeat_field.clear()
+            password_repeat_field.send_keys(password.value)
+
+            register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
+            register.click()
+
+            time.sleep(2)
+
+            element = self.driver.find_element_by_css_selector("div.ng-scope > button.btn")
+            self.assertTrue(element.is_displayed())
+            element.click()
+            time.sleep(2)
 
     def test_already_used_user_name(self):
 
@@ -74,7 +77,7 @@ class RegistrationTest (unittest.TestCase):
         username.clear()
         username.send_keys(login.value)
 
-        email = "random1@emali.com"
+        email = "random2@emali.com"
 
         email_field = self.driver.find_element_by_name("email")
         email_field.clear()
@@ -104,7 +107,7 @@ class RegistrationTest (unittest.TestCase):
 
         self.preparation()
 
-        login = "some_user_name"
+        login = "some_user_name_2"
 
         username = self.driver.find_element_by_name("username")
         username.clear()
@@ -260,7 +263,7 @@ class RegistrationTest (unittest.TestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    # suite.addTest(RegistrationTest("test_correct_registration_data"))
+    suite.addTest(RegistrationTest("test_correct_registration_data"))
     suite.addTest(RegistrationTest("test_already_used_user_name"))
     suite.addTest(RegistrationTest("test_already_used_email"))
     suite.addTest(RegistrationTest("test_different_emails"))
