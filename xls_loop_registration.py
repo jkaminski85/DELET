@@ -24,45 +24,45 @@ class RegistrationTest (unittest.TestCase):
             "//md-dialog[@id='dialogContent_6']/div/md-content/div/form/button[2]")
         register_button.click()
 
-    def test_correct_registration_data(self):
-
-        for i in range(self.book_sheet.nrows):
-
-            self.preparation()
-
-            login = self.book_sheet.cell(i, 1)
-
-            username = self.driver.find_element_by_name("username")
-            username.clear()
-            username.send_keys(login.value)
-
-            email = self.book_sheet.cell(i, 2)
-
-            email_field = self.driver.find_element_by_name("email")
-            email_field.clear()
-            email_field.send_keys(email.value)
-            repeat_email_field = self.driver.find_element_by_name("emailrepeat")
-            repeat_email_field.clear()
-            repeat_email_field.send_keys(email.value)
-
-            password = self.book_sheet.cell(1, 4)
-
-            password_field = self.driver.find_element_by_name("password")
-            password_field.clear()
-            password_field.send_keys(password.value)
-            password_repeat_field = self.driver.find_element_by_name("password_repeat")
-            password_repeat_field.clear()
-            password_repeat_field.send_keys(password.value)
-
-            register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
-            register.click()
-
-            time.sleep(2)
-
-            element = self.driver.find_element_by_css_selector("div.ng-scope > button.btn")
-            self.assertTrue(element.is_displayed())
-            element.click()
-            time.sleep(2)
+    # def test_correct_registration_data(self):
+    #
+    #     for i in range(self.book_sheet.nrows):
+    #
+    #         self.preparation()
+    #
+    #         login = self.book_sheet.cell(i, 1)
+    #
+    #         username = self.driver.find_element_by_name("username")
+    #         username.clear()
+    #         username.send_keys(login.value)
+    #
+    #         email = self.book_sheet.cell(i, 2)
+    # 
+    #         email_field = self.driver.find_element_by_name("email")
+    #         email_field.clear()
+    #         email_field.send_keys(email.value)
+    #         repeat_email_field = self.driver.find_element_by_name("emailrepeat")
+    #         repeat_email_field.clear()
+    #         repeat_email_field.send_keys(email.value)
+    #
+    #         password = self.book_sheet.cell(1, 4)
+    #
+    #         password_field = self.driver.find_element_by_name("password")
+    #         password_field.clear()
+    #         password_field.send_keys(password.value)
+    #         password_repeat_field = self.driver.find_element_by_name("password_repeat")
+    #         password_repeat_field.clear()
+    #         password_repeat_field.send_keys(password.value)
+    #
+    #         register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
+    #         register.click()
+    #
+    #         time.sleep(2)
+    #
+    #         element = self.driver.find_element_by_css_selector("div.ng-scope > button.btn")
+    #         self.assertTrue(element.is_displayed())
+    #         element.click()
+    #         time.sleep(2)
 
     def test_already_used_user_name(self):
 
@@ -206,21 +206,70 @@ class RegistrationTest (unittest.TestCase):
 
             time.sleep(2)
 
+    def test_incorrect_birth_date(self):
+
+        birth_date = ['1799', '2018', '3900']
+
+        for birth_date in birth_date:
+
+            self.preparation()
+
+            time.sleep(1)
+
+            birth_date_field = self.driver.find_element_by_name("birthYear")
+
+            birth_date_field.clear()
+            birth_date_field.send_keys(birth_date)
+
+            register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
+            register.click()
+
+            message = self.driver.find_element_by_class_name("ng-scope")
+            self.assertIn(u"Nieprawidłowy rok urodzenia", message.text)
+
+            self.driver.find_element_by_css_selector("md-icon").click()
+
+            time.sleep(2)
+
+        birth_date = ['1', '22', '390', 'aa', 'a11', '!@@#', ')ii2', ' 1975']
+
+        for birth_date in birth_date:
+
+            self.preparation()
+
+            time.sleep(1)
+
+            birth_date_field = self.driver.find_element_by_name("birthYear")
+
+            birth_date_field.clear()
+            birth_date_field.send_keys(birth_date)
+
+            register = self.driver.find_element_by_css_selector("form[name=\"RegisterForm\"] > button.btn")
+            register.click()
+
+            message = self.driver.find_element_by_class_name("ng-scope")
+            self.assertIn(u"Rok urodzenia musi składać się z 4 cyfr.", message.text)
+
+            self.driver.find_element_by_css_selector("md-icon").click()
+
+            time.sleep(2)
+
     def tearDown(self):
         self.driver.close()
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(RegistrationTest("test_correct_registration_data"))
+    # suite.addTest(RegistrationTest("test_correct_registration_data"))
     suite.addTest(RegistrationTest("test_already_used_user_name"))
     suite.addTest(RegistrationTest("test_already_used_email"))
     suite.addTest(RegistrationTest("test_different_emails"))
     suite.addTest(RegistrationTest("test_different_passwords"))
     suite.addTest(RegistrationTest("test_correct_birth_date"))
+    suite.addTest(RegistrationTest("test_incorrect_birth_date"))
     return suite
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2, defaultTest="suite")
+    unittest.main(verbosity=3, defaultTest="suite")
 
 
